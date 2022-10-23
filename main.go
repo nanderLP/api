@@ -9,10 +9,6 @@ import (
 )
 
 func main() {
-
-	hub := websocket.NewHub()
-	go hub.Run()
-
 	// load environment variables
 	err := godotenv.Load()
 	if err != nil {

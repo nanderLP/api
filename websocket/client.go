@@ -87,7 +87,6 @@ func (c *Client) readPump() {
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 		clientMessage := ClientMessage{}
 		err = json.Unmarshal(message, &clientMessage)
-		log.Printf("TYPE %v | MESSAGE %v", mt, string(message))
 		c.hub.broadcast <- Message{
 			Id:      c.id,
 			Message: clientMessage,

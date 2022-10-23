@@ -4,10 +4,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 	"github.com/nanderLP/api/spotify"
+	"github.com/nanderLP/api/websocket"
 	"log"
 )
 
 func main() {
+
+	hub := websocket.NewHub()
+	go hub.Run()
 
 	// load environment variables
 	err := godotenv.Load()
@@ -23,6 +27,9 @@ func main() {
 
 	spotifyGroup := app.Group("/spotify")
 	spotify.Handler(spotifyGroup)
+
+	websocketGroup := app.Group("/ws")
+	websocket.Handler(websocketGroup)
 
 	app.Listen(":3000")
 }

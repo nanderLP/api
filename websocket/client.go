@@ -1,5 +1,7 @@
+// Modified version of https://github.com/fasthttp/websocket/blob/master/_examples/chat/client.go
 // Copyright 2013 The Gorilla WebSocket Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license
+// You can find it here: https://github.com/fasthttp/websocket/blob/master/LICENSE
 
 package websocket
 

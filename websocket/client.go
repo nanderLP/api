@@ -10,8 +10,8 @@ import (
 	"encoding/json"
 	"github.com/fasthttp/websocket"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/utils"
 	fiberWebsocket "github.com/gofiber/websocket/v2"
+	"github.com/jaevor/go-nanoid"
 	"log"
 	"time"
 )
@@ -79,7 +79,7 @@ func (c *Client) readPump() {
 	c.conn.SetReadDeadline(time.Now().Add(pongWait))
 	c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
-		mt, message, err := c.conn.ReadMessage()
+		_, message, err := c.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("error: %v", err)
@@ -154,11 +154,13 @@ func (c *Client) writePump() {
 // serveWs handles websocket requests from the peer.
 func serveWs(hub *Hub) fiber.Handler {
 	return fiberWebsocket.New(func(c *fiberWebsocket.Conn) {
-		id := utils.CopyString(c.Query("id"))
-		if id == "" {
-			c.Conn.WriteMessage(websocket.CloseMessage, []byte{})
-			return
+		idGenerator, err := nanoid.CustomASCII("abcdefghijklmnopqrstuvwxyz123456789", 5)
+		if err != nil {
+			c.Conn.WriteMessage(websocket.CloseMessage, []byte("Could not generate id"))
 		}
+
+		id := idGenerator()
+
 		client := &Client{hub: hub, id: id, conn: c.Conn, send: make(chan Message, 256)}
 		client.hub.register <- client
 
